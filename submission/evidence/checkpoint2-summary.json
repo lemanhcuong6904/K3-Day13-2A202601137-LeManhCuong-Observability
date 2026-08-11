@@ -1,0 +1,49 @@
+{
+  "total_traces": 4,
+  "versions": {
+    "v1": 1,
+    "v2": 2
+  },
+  "traces": {
+    "baseline": {
+      "trace_id": "e5d45d245abc3953ee584256d8b7ae14",
+      "session_id": "checkpoint2-baseline-1786422184",
+      "prompt_name": "day13-chat",
+      "prompt_label": "baseline",
+      "prompt_version": "1",
+      "prompt_source": "langfuse",
+      "observation_count": 1,
+      "latency_ms": 0
+    },
+    "candidate": {
+      "trace_id": "36be0aca57c87ed81bfe377783539bc9",
+      "session_id": "checkpoint2-candidate-1786422190",
+      "prompt_name": "day13-chat",
+      "prompt_label": "candidate",
+      "prompt_version": "2",
+      "prompt_source": "langfuse",
+      "observation_count": 1,
+      "latency_ms": 0
+    },
+    "production_v2": {
+      "trace_id": "1a5639454001dbc38dc8b98b609beb98",
+      "session_id": "checkpoint2-production-v2-1786422197",
+      "prompt_name": "day13-chat",
+      "prompt_label": "production",
+      "prompt_version": "2",
+      "prompt_source": "langfuse",
+      "observation_count": 1,
+      "latency_ms": 0
+    },
+    "production_v1": {
+      "trace_id": "5a3b37849adf4b4df63522a10b148515",
+      "session_id": "checkpoint2-production-v1-1786422204",
+      "prompt_name": "day13-chat",
+      "prompt_label": "production",
+      "prompt_version": "1",
+      "prompt_source": "langfuse",
+      "observation_count": 1,
+      "latency_ms": 0
+    }
+  }
+}
