@@ -1,0 +1,15 @@
+Representative challenge log evidence from data/logs.jsonl:
+
+correlation_id=req-c58ec1ee
+- request_received: feature=refund, session_id=k3-challenge-s05, message_preview="Summarize the refund policy for a support agent."
+- response_sent: latency_ms=3664, tokens_in=34, tokens_out=168, cost_usd=0.002622, quality_score=0.8
+
+correlation_id=req-dee63590
+- request_received: feature=refund, session_id=k3-challenge-s02, message_preview="What proof is required for a refund?"
+- response_sent: latency_ms=3594, tokens_in=31, tokens_out=115, cost_usd=0.001818, quality_score=0.9
+
+Observed pattern:
+- All official challenge requests used feature=refund.
+- Each completed request crossed the 3000 ms latency SLO.
+- No request_failed event was observed in the challenge run.
+- Root-cause investigation should continue in Langfuse traces by opening one of these correlation IDs/time-window traces and checking the slow run/retrieve span.

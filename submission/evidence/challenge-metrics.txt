@@ -1,0 +1,49 @@
+Challenge ID: day13-k3-observability-v1
+Scenario observed from injected incident status: rag_slow=true
+
+Baseline metrics before challenge:
+- traffic: 40
+- latency_p50: 1072 ms
+- latency_p95: 1143 ms
+- latency_p99: 1217 ms
+- avg_cost_usd: 0.0021
+- total_cost_usd: 0.084
+- tokens_in_total: 1320
+- tokens_out_total: 5339
+- error_breakdown: {}
+- quality_avg: 0.88
+
+Challenge run:
+- command: .\.venv\Scripts\python.exe scripts\inject_incident.py
+- inject response: rag_slow=true, tool_fail=false, cost_spike=false
+- command: .\.venv\Scripts\python.exe scripts\load_test.py --challenge --concurrency 5
+- load test result: 5/5 HTTP 200 responses
+- challenge feature: refund
+- load test observed client latency: about 18034 ms per request
+
+Incident metrics after challenge:
+- traffic: 45
+- latency_p50: 1087 ms
+- latency_p95: 3594 ms
+- latency_p99: 3664 ms
+- avg_cost_usd: 0.0021
+- total_cost_usd: 0.0949
+- tokens_in_total: 1482
+- tokens_out_total: 6028
+- error_breakdown: {}
+- quality_avg: 0.8778
+
+Metric conclusion:
+- Main symptom: latency regression.
+- SLO violated: latency_p95_ms <= 3000 ms.
+- Baseline P95: 1143 ms.
+- Incident P95: 3594 ms.
+- Error rate did not increase.
+- Cost, tokens, and quality changed only slightly.
+
+Relevant correlation IDs:
+- req-c58ec1ee: response_sent latency_ms=3664, feature=refund, session_id=k3-challenge-s05
+- req-00e24f50: response_sent latency_ms=3535, feature=refund, session_id=k3-challenge-s03
+- req-dee63590: response_sent latency_ms=3594, feature=refund, session_id=k3-challenge-s02
+- req-feec33d7: response_sent latency_ms=3510, feature=refund, session_id=k3-challenge-s01
+- req-12ebba6e: response_sent latency_ms=3642, feature=refund, session_id=k3-challenge-s04

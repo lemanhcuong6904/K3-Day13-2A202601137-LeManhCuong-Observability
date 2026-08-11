@@ -90,16 +90,16 @@
   <main class="wrap">
     <header>
       <h1>Day 13 AI Observability Dashboard</h1>
-      <p class="sub">Source: data/logs.jsonl | Time range: 60 minutes | Refresh: 30 seconds | Generated: 2026-08-11 04:14:10 UTC</p>
+      <p class="sub">Source: data/logs.jsonl | Time range: 60 minutes | Refresh: 30 seconds | Generated: 2026-08-11 04:29:50 UTC</p>
     </header>
     <div class="grid">
       
         <section class="panel">
           <div class="panel-top">
             <h2>Latency percentiles</h2>
-            <span class="badge ok">OK</span>
+            <span class="badge violated">VIOLATED</span>
           </div>
-          <p class="metric">P50 1084.50 ms | P95 1189.45 ms | P99 1414.74 ms</p>
+          <p class="metric">P50 1087 ms | P95 3530 ms | P99 3649.92 ms</p>
           <p class="meta">Unit: ms</p>
           <p class="threshold">SLO: P95 <= 3000 ms</p>
         </section>
@@ -110,7 +110,7 @@
             <h2>Request traffic</h2>
             <span class="badge ok">OK</span>
           </div>
-          <p class="metric">60 requests | 1.00 req/min</p>
+          <p class="metric">65 requests | 1.08 req/min</p>
           <p class="meta">Unit: requests_per_minute</p>
           <p class="threshold">SLO: >= 1 request/minute</p>
         </section>
@@ -132,7 +132,7 @@
             <h2>Cost over time</h2>
             <span class="badge ok">OK</span>
           </div>
-          <p class="metric">$0.1202 total | $0.0020/min</p>
+          <p class="metric">$0.1310 total | $0.0022/min</p>
           <p class="meta">Unit: usd</p>
           <p class="threshold">SLO: total <= 2.5 USD</p>
         </section>
@@ -143,7 +143,7 @@
             <h2>Input and output tokens</h2>
             <span class="badge ok">OK</span>
           </div>
-          <p class="metric">1980 input | 7618 output | 9598 total</p>
+          <p class="metric">2142 input | 8307 output | 10449 total</p>
           <p class="meta">Unit: tokens</p>
           <p class="threshold">SLO: total tokens <= 50000</p>
         </section>
