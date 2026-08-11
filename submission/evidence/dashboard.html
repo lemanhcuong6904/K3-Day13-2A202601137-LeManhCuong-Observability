@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 13 AI Observability Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f7f9;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    header {
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-size: 30px;
+      margin: 0 0 8px;
+      letter-spacing: 0;
+    }
+    .sub {
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .panel {
+      background: white;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 150px;
+      box-sizing: border-box;
+    }
+    .panel-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    h2 {
+      font-size: 16px;
+      margin: 0;
+      letter-spacing: 0;
+    }
+    .metric {
+      font-size: 22px;
+      line-height: 1.25;
+      margin: 18px 0 12px;
+      font-weight: 700;
+    }
+    .meta, .threshold {
+      font-size: 13px;
+      color: #4b5563;
+      margin: 6px 0 0;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .ok {
+      color: #065f46;
+      background: #d1fae5;
+    }
+    .violated {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Day 13 AI Observability Dashboard</h1>
+      <p class="sub">Source: data/logs.jsonl | Time range: 60 minutes | Refresh: 30 seconds | Generated: 2026-08-11 04:14:10 UTC</p>
+    </header>
+    <div class="grid">
+      
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Latency percentiles</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">P50 1084.50 ms | P95 1189.45 ms | P99 1414.74 ms</p>
+          <p class="meta">Unit: ms</p>
+          <p class="threshold">SLO: P95 <= 3000 ms</p>
+        </section>
+        
+
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Request traffic</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">60 requests | 1.00 req/min</p>
+          <p class="meta">Unit: requests_per_minute</p>
+          <p class="threshold">SLO: >= 1 request/minute</p>
+        </section>
+        
+
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Error rate and breakdown</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">0.00% | no errors</p>
+          <p class="meta">Unit: percent</p>
+          <p class="threshold">SLO: error rate <= 2%</p>
+        </section>
+        
+
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Cost over time</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">$0.1202 total | $0.0020/min</p>
+          <p class="meta">Unit: usd</p>
+          <p class="threshold">SLO: total <= 2.5 USD</p>
+        </section>
+        
+
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Input and output tokens</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">1980 input | 7618 output | 9598 total</p>
+          <p class="meta">Unit: tokens</p>
+          <p class="threshold">SLO: total tokens <= 50000</p>
+        </section>
+        
+
+        <section class="panel">
+          <div class="panel-top">
+            <h2>Quality proxy</h2>
+            <span class="badge ok">OK</span>
+          </div>
+          <p class="metric">Mean quality 0.88</p>
+          <p class="meta">Unit: score_0_to_1</p>
+          <p class="threshold">SLO: mean >= 0.75</p>
+        </section>
+        
+    </div>
+  </main>
+</body>
+</html>
