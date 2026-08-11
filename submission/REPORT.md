@@ -1,59 +1,77 @@
-# Báo cáo Day 13 Observability
+# Day 13 Observability Report
 
-## 1. Thông tin nhóm
+## 1. Team Information
 
-- Tên nhóm:
+- Team name:
 - Repository URL:
-- Commit SHA cuối:
-- Thành viên và vai trò:
+- Final commit SHA:
+- Members and roles:
 
-## 2. Kết quả kỹ thuật
+## 2. Technical Results
 
-- Điểm `validate_logs.py`: 100/100 (Baseline ban đầu: 30/100)
-- Tổng số traces:
-- Số PII leak còn lại: 0
-- Link/đường dẫn dashboard:
+- `validate_logs.py` score: 100/100
+- Total traces:
+- Remaining PII leaks: 0
+- Dashboard link/path:
+- Evidence collection date: 2026-08-11
 
-## 3. Logging và tracing
+## 3. Logging and Tracing
 
-- Evidence correlation ID: *(Đã đính kèm log line minh chứng có chứa `correlation_id` và các trường enrichment như `user_id_hash`, `session_id`, `feature`, `model`)*
-- Evidence PII redaction: *(Đã đính kèm log line minh chứng email/sđt bị ẩn thành `[REDACTED_...]`)*
-- Evidence trace waterfall:
-- Giải thích một span đáng chú ý:
+- Correlation ID evidence: attached log lines show `correlation_id` and enrichment fields such as `user_id_hash`, `session_id`, `feature`, and `model`.
+- PII redaction evidence: attached log lines show email/phone/card values redacted as `[REDACTED_...]`.
+- Trace waterfall evidence:
+- Notable span explanation:
+- Waterfall trace ID:
+- Attached evidence files:
 
-**Câu hỏi phản biện (Checkpoint 1):**
-- *Sự khác biệt lớn nhất giữa log baseline (CP0) và log CP1:* Log CP0 thiếu `correlation_id` nên không thể gom nhóm các sự kiện của cùng 1 request, thiếu metadata (ngữ cảnh) và để lộ nguyên văn dữ liệu nhạy cảm (PII). Log CP1 đã tự động che PII, đồng thời gắn `correlation_id` và các metadata (`user_id_hash`, v.v.) xuyên suốt mọi dòng log của request, giúp dễ dàng truy vết và phân tích.
-- *Tại sao phải gọi `clear_contextvars()` ở đầu middleware?* Vì FastAPI/Uvicorn xử lý bất đồng bộ (async), môi trường context (như `structlog.contextvars`) có thể bị dùng lại hoặc chia sẻ giữa các request. Nếu không xóa (clear) context cũ, dữ liệu (ví dụ ID, email) của request trước đó có thể bị rò rỉ (leak) và ghi nhầm vào log của request hiện tại.
-
-## 4. Prompt versioning
+## 4. Prompt Versioning
 
 - Prompt name:
-- Version/label baseline:
-- Version/label candidate:
-- Trace ID của mỗi version:
-- Bằng chứng đổi label hoặc rollback:
+- Baseline version/label:
+- Candidate version/label:
+- Trace IDs for each version:
+- Promote or rollback evidence:
+- Production trace ID after promote:
+- Production trace ID after rollback:
+- Prompt/version evidence files:
 
-## 5. Dashboard, SLO và alerts
+## 5. Dashboard, SLO, and Alerts
 
-- Kết quả `validate_dashboard.py`:
-- Evidence dashboard:
-- SLO đã chọn và lý do:
-- Alert rules và runbook:
+- `validate_dashboard.py` result:
+- Dashboard evidence:
+- Chosen SLO and reason:
+- Alert rules and runbook:
+- Key dashboard thresholds:
 
-## 6. Điều tra challenge
+## 6. Challenge Investigation
 
 - Challenge ID:
-- Triệu chứng từ metrics:
-- Trace ID liên quan:
-- Log line/correlation ID liên quan:
+- Symptoms from metrics:
+- Related trace ID:
+- Related log line/correlation ID:
 - Root cause:
 - Fix action:
 - Preventive measure:
 
-## 7. Đóng góp cá nhân
+## 7. Individual Contribution
 
-Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
+For each member, list scope and commit/PR references.
 
-| Thành viên | Phần việc | Commit/PR | Điều đã học |
+| Member | Scope | Commit/PR | Key learning |
 |---|---|---|---|
 | | | | |
+
+## 8. Role 2 Evidence Index
+
+| Item | Suggested path | Notes |
+|---|---|---|
+| Validate logs | `submission/evidence/validate-logs.txt` | Final validator output for checkpoint 1 |
+| Trace list >= 10 | `submission/evidence/traces-list.png` | Langfuse trace list |
+| Waterfall | `submission/evidence/trace-waterfall.png` | One full waterfall trace |
+| Prompt versions | `submission/evidence/prompt-versions.png` | Shows v1/v2 and labels |
+| Baseline trace | `submission/evidence/trace-baseline.png` | Shows `prompt_name`, `prompt_label`, `prompt_version` |
+| Candidate trace | `submission/evidence/trace-candidate.png` | Shows `prompt_name`, `prompt_label`, `prompt_version` |
+| Promote | `submission/evidence/prompt-promote.png` | `production` moved to v2 |
+| Rollback | `submission/evidence/prompt-rollback.png` | `production` moved back to v1 |
+| Dashboard validator | `submission/evidence/validate-dashboard.txt` | Output of `python scripts/validate_dashboard.py` |
+| Dashboard runtime | `submission/evidence/dashboard.png` | 6 panels with threshold/SLO |
