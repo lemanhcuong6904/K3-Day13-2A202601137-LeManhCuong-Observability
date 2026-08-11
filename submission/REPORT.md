@@ -9,17 +9,21 @@
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`:
+- Điểm `validate_logs.py`: 100/100 (Baseline ban đầu: 30/100)
 - Tổng số traces:
-- Số PII leak còn lại:
+- Số PII leak còn lại: 0
 - Link/đường dẫn dashboard:
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
+- Evidence correlation ID: *(Đã đính kèm log line minh chứng có chứa `correlation_id` và các trường enrichment như `user_id_hash`, `session_id`, `feature`, `model`)*
+- Evidence PII redaction: *(Đã đính kèm log line minh chứng email/sđt bị ẩn thành `[REDACTED_...]`)*
 - Evidence trace waterfall:
 - Giải thích một span đáng chú ý:
+
+**Câu hỏi phản biện (Checkpoint 1):**
+- *Sự khác biệt lớn nhất giữa log baseline (CP0) và log CP1:* Log CP0 thiếu `correlation_id` nên không thể gom nhóm các sự kiện của cùng 1 request, thiếu metadata (ngữ cảnh) và để lộ nguyên văn dữ liệu nhạy cảm (PII). Log CP1 đã tự động che PII, đồng thời gắn `correlation_id` và các metadata (`user_id_hash`, v.v.) xuyên suốt mọi dòng log của request, giúp dễ dàng truy vết và phân tích.
+- *Tại sao phải gọi `clear_contextvars()` ở đầu middleware?* Vì FastAPI/Uvicorn xử lý bất đồng bộ (async), môi trường context (như `structlog.contextvars`) có thể bị dùng lại hoặc chia sẻ giữa các request. Nếu không xóa (clear) context cũ, dữ liệu (ví dụ ID, email) của request trước đó có thể bị rò rỉ (leak) và ghi nhầm vào log của request hiện tại.
 
 ## 4. Prompt versioning
 
