@@ -4,6 +4,8 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+from .tracing import observe
+
 
 DEFAULT_PROMPT_TEMPLATE = "Feature={{feature}}\nDocs={{docs}}\nQuestion={{message}}"
 
@@ -27,6 +29,7 @@ def _compile_local_prompt(*, feature: str, docs: list[str], message: str) -> str
     )
 
 
+@observe(name="prompt.resolve", as_type="span", capture_input=False, capture_output=False)
 def resolve_prompt(
     client: Any,
     *,

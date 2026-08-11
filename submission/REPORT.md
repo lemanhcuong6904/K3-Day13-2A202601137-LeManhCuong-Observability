@@ -71,13 +71,22 @@
 - Root cause: incident `rag_slow` được bơm vào layer retrieval. Bằng chứng ở `app/mock_rag.py`: khi `STATE["rag_slow"] = True`, hàm `retrieve()` chủ động `time.sleep(2.5)`. Vì `app/agent.py` gọi `retrieve(message)` trước LLM generate, toàn bộ request bị đội latency thêm khoảng 2.5 giây.
 - Fix action: tắt incident bằng `python scripts/inject_incident.py --disable` hoặc `POST /incidents/rag_slow/disable`, sau đó chạy lại load test để xác nhận latency quay về baseline. Nếu đây là production thật, cách fix kỹ thuật là timeout retrieval, cache hot queries `refund`, và fallback gracefully khi vector store chậm.
 - Preventive measure: đặt alert cho p95 latency theo feature `refund` vượt `2000ms`; thêm sub-component tracing cho span `retrieve`; ghi metadata nguồn docs/cache-hit; thêm circuit breaker/timeout cho RAG; và chuẩn hóa runbook `metrics → trace waterfall → correlation ID → logs`.
+- Trace ID Role 2 sau khi bổ sung child spans:
+  - `k3-challenge-s01`: `f6e6142c21b9a611c7cc1217e717a18f`
+  - `k3-challenge-s02`: `6b989dcde63d896fb132698d94070a73`
+  - `k3-challenge-s03`: `a512d07b66b260df864235cc3b3c3191`
+  - `k3-challenge-s04`: `a1ae0be6f1404c1c22a59552ca9d365c`
+  - `k3-challenge-s05`: `a5c5edd50f6f3c757299b95f9de28011`
+- Correlation ID Role 2 tương ứng: `req-21e3d8dc`, `req-71209877`, `req-f7a0dae0`, `req-9bdb656b`, `req-719c1e28`.
+- Span bất thường trong trace waterfall Role 2: `rag.retrieve` mất khoảng `2.501-2.505s`, trong khi `llm.generate` chỉ khoảng `0.151-0.153s`.
+- Evidence Role 2: `submission/evidence/role2_checkpoint3_trace_summary.md`.
 
 ## 7. Đóng góp cá nhân
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
 | Nguyễn Tuấn Anh - 2A202601775 | Dashboard, SLO & Alert: dựng dashboard, cấu hình SLO và alert rule | `f1a02e5` | Biết cách chọn chỉ số quan trọng và biến chúng thành dashboard/alert hữu ích |
-| Lê Mạnh Cương - 2A202601137 | Tracing & Prompt Version: cấu hình trace, theo dõi prompt version và evidence trên Langfuse | `f1a02e5` | Hiểu cách trace giúp khoanh vùng bottleneck và liên kết prompt version với request |
+| Lê Mạnh Cương - 2A202601137 | Tracing & Prompt Version: cấu hình trace, theo dõi prompt version, bổ sung child spans `rag.retrieve`, `prompt.resolve`, `llm.generate` và dùng waterfall để khoanh vùng checkpoint 3 | `f1a02e5`, commit Role 2 checkpoint 3 | Hiểu cách trace giúp khoanh vùng bottleneck, phân biệt nghẽn retrieval với LLM và liên kết prompt version với request |
 | Lê Ngọc Khánh - 2A202601487 | Incident, Report & Demo: chạy challenge, nối metrics → traces → logs, xác định root cause `rag_slow`, hoàn thiện báo cáo và demo | `8352785b8ce37386264bcd81a9555d403ac3b8a0` | Biết cách điều tra incident theo flow metrics → traces → logs và dùng correlation ID để chứng minh root cause |
 | Vũ Ngọc Thiện - 2A202601793 | Logging & PII: chuẩn hóa JSON log, correlation ID, enrichment và PII redaction | `7a57bfb` | Hiểu vai trò của structured logging và cách giảm rủi ro lộ dữ liệu nhạy cảm |
 
@@ -86,6 +95,7 @@
 - `submission/evidence/validate-logs.txt`
 - `submission/evidence/validate-dashboard.txt`
 - `submission/evidence/README.md`
+- `submission/evidence/role2_checkpoint3_trace_summary.md`
 
 ## 9. Việc còn lại để nộp đầy đủ
 
