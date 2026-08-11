@@ -1,11 +1,15 @@
-# Báo cáo Day 13 Observability
+﻿# Báo cáo Day 13 Observability
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
-- Repository URL:
-- Commit SHA cuối:
+- Tên nhóm: [Điền tên nhóm]
+- Repository URL: `https://github.com/lengockhanh-code/Day13-K3-Observability-Flash`
+- Commit SHA cuối: `8352785b8ce37386264bcd81a9555d403ac3b8a0`
 - Thành viên và vai trò:
+  - Nguyễn Tuấn Anh - 2A202601775 - Dashboard, SLO & Alert
+  - Lê Mạnh Cương - 2A202601137 - Tracing & Prompt Version
+  - Lê Ngọc Khánh - 2A202601487 - Incident, Report & Demo
+  - Vũ Ngọc Thiện - 2A202601793 - Logging & PII
 
 ## 2. Kết quả kỹ thuật
 
@@ -18,15 +22,15 @@
   - Số PII leak còn lại: `0`
 - Kết quả `validate_dashboard.py`: `HỢP LỆ: 6/6 panel có trong dashboard contract.`
 - Kết quả test đã chạy: `14 passed`
-- Tổng số traces:
-- Link/đường dẫn dashboard:
+- Tổng số traces: `22`
+- Link/đường dẫn dashboard: [Đính kèm ảnh dashboard runtime hoặc link dashboard nếu nhóm có share link]
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID: đã có log line minh chứng chứa `correlation_id` và các trường enrichment như `user_id_hash`, `session_id`, `feature`, `model`, `env`.
-- Evidence PII redaction: đã có log line minh chứng email, số điện thoại và số thẻ thử nghiệm bị ẩn thành `[REDACTED_...]`.
-- Evidence trace waterfall:
-- Giải thích một span đáng chú ý:
+- Evidence correlation ID: đã có log line minh chứng chứa `correlation_id` và các trường enrichment như `user_id_hash`, `session_id`, `feature`, `model`, `env`. Ví dụ challenge có các correlation ID: `req-c3144354`, `req-247b7289`, `req-be702446`, `req-33f8e10c`, `req-d8cf6798`.
+- Evidence PII redaction: đã có log line minh chứng email, số điện thoại và số thẻ thử nghiệm bị ẩn thành `[REDACTED_...]`. Kết quả `validate_logs.py` báo `Potential PII leaks detected: 0`.
+- Evidence trace waterfall: Langfuse trace view `https://cloud.langfuse.com/project/cmso2wtpx03rlad0ieop468ww/traces?searchType=id&searchType=content`. Tại đây có `Total 22` traces trong 1 ngày gần nhất. Khi điều tra challenge, lọc theo `feature=refund` hoặc `session_id` trong khung thời gian `2026-08-11 03:45Z`, sau đó mở trace để xem waterfall.
+- Giải thích một span đáng chú ý: span retrieve/RAG là span đáng chú ý nhất vì incident `rag_slow` xảy ra trước bước generation, làm toàn bộ request tăng latency nhưng không sinh lỗi 500.
 
 **Câu hỏi phản biện (Checkpoint 1):**
 - *Sự khác biệt lớn nhất giữa log baseline (CP0) và log CP1:* log CP0 thiếu `correlation_id` nên không thể gom nhóm các sự kiện của cùng một request, thiếu metadata ngữ cảnh và còn rủi ro lộ dữ liệu nhạy cảm. Log CP1 đã che PII, đồng thời gắn `correlation_id` và các metadata như `user_id_hash`, `session_id`, `feature`, `model` xuyên suốt request, nên dễ truy vết và phân tích hơn.
@@ -34,17 +38,17 @@
 
 ## 4. Prompt versioning
 
-- Prompt name:
-- Version/label baseline:
-- Version/label candidate:
-- Trace ID của mỗi version:
-- Bằng chứng đổi label hoặc rollback:
+- Prompt name: `day13-chat`
+- Version/label baseline: `production`
+- Version/label candidate: [Điền version/label đã tạo trên Langfuse]
+- Trace ID của mỗi version: [Điền trace ID thực tế]
+- Bằng chứng đổi label hoặc rollback: [Đính kèm ảnh hoặc trace evidence trên Langfuse]
 - Ghi chú: phần code đã sẵn sàng để ghi `prompt_name`, `prompt_label`, `prompt_version`, `prompt_source` vào trace metadata và generation metadata.
 
 ## 5. Dashboard, SLO và alerts
 
-- Kết quả `validate_dashboard.py`: hợp lệ, đủ `6/6 panel`.
-- Evidence dashboard: `submission/evidence/dashboard-validator.png` và `submission/evidence/validate-dashboard.txt`. Cần bổ sung ảnh dashboard runtime baseline sau khi nhóm dựng dashboard bằng công cụ đã chọn.
+- Kết quả `validate_dashboard.py`: `HỢP LỆ: 6/6 panel có trong dashboard contract.`
+- Evidence dashboard: `submission/evidence/dashboard-validator.png`, `submission/evidence/validate-dashboard.txt`, và [Đính kèm ảnh dashboard runtime].
 - SLO đã chọn và lý do:
   - `latency_p95_ms <= 3000`: giữ P95 dưới 3 giây để người dùng không thấy phản hồi chat bị chậm rõ rệt.
   - `error_rate_pct <= 2`: giữ tỷ lệ lỗi thấp để đa số request `/chat` trả lời thành công.
@@ -58,23 +62,22 @@
 
 ## 6. Điều tra challenge
 
-- Challenge ID:
-- Triệu chứng từ metrics:
-- Trace ID liên quan:
-- Log line/correlation ID liên quan:
-- Root cause:
-- Fix action:
-- Preventive measure:
+- Challenge ID: `day13-k3-observability-v1` (`incident=rag_slow`, `affected_feature=refund`, `latency_threshold_ms=2000`)
+- Triệu chứng từ metrics: Sau khi chạy `python scripts/load_test.py --challenge --concurrency 5` trong lượt điều tra ngày `2026-08-11`, cả 5 request đều `200 OK` nhưng latency tăng vọt. Snapshot từ `/metrics` khi đó là: `traffic=5`, `latency_p50=3380ms`, `latency_p95=3397ms`, `latency_p99=3397ms`, `error_breakdown={}`. So với baseline trước incident khoảng `0.8-0.9s/request` trong log, đây là latency spike chứ không phải error spike.
+- Trace ID liên quan: Trên Langfuse, lọc traces theo `feature=refund` hoặc `session_id` trong khung `2026-08-11 03:45Z`. Các session của challenge: `k3-challenge-s01` → `req-c3144354`, `k3-challenge-s02` → `req-247b7289`, `k3-challenge-s03` → `req-be702446`, `k3-challenge-s04` → `req-33f8e10c`, `k3-challenge-s05` → `req-d8cf6798`. Trace waterfall kỳ vọng span chậm nằm ở bước retrieve/RAG, không phải generation.
+- Log line/correlation ID liên quan: `req-be702446` (`2026-08-11T03:45:26Z` → `03:45:30Z`, `latency_ms=3388`), `req-c3144354` (`latency_ms=3380`), `req-d8cf6798` (`latency_ms=3397`), `req-33f8e10c` (`latency_ms=3354`), `req-247b7289` (`latency_ms=3361`). Tất cả đều cùng `feature=refund`, model `claude-sonnet-4-5`, env `dev`, và xuất hiện sau log `incident_enabled` với payload `rag_slow`.
+- Root cause: incident `rag_slow` được bơm vào layer retrieval. Bằng chứng ở `app/mock_rag.py`: khi `STATE["rag_slow"] = True`, hàm `retrieve()` chủ động `time.sleep(2.5)`. Vì `app/agent.py` gọi `retrieve(message)` trước LLM generate, toàn bộ request bị đội latency thêm khoảng 2.5 giây.
+- Fix action: tắt incident bằng `python scripts/inject_incident.py --disable` hoặc `POST /incidents/rag_slow/disable`, sau đó chạy lại load test để xác nhận latency quay về baseline. Nếu đây là production thật, cách fix kỹ thuật là timeout retrieval, cache hot queries `refund`, và fallback gracefully khi vector store chậm.
+- Preventive measure: đặt alert cho p95 latency theo feature `refund` vượt `2000ms`; thêm sub-component tracing cho span `retrieve`; ghi metadata nguồn docs/cache-hit; thêm circuit breaker/timeout cho RAG; và chuẩn hóa runbook `metrics → trace waterfall → correlation ID → logs`.
 
 ## 7. Đóng góp cá nhân
 
-Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
-
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| Role 2 | Hoàn thiện checkpoint 1 về correlation ID, log enrichment, PII-safe logging | `38d41d9` | Cần bind context ở đúng cả middleware và request handler để log/tracing khớp nhau |
-| Role 2 | Hoàn thiện checkpoint 2 về báo cáo, evidence validator và hợp nhất lại trên nền `group/main` | `132eaea` | Khi làm việc song song nhiều role, rebase và giải quyết conflict theo từng checkpoint giúp giữ lịch sử rõ ràng |
-| Role 3 | Hoàn thiện dashboard spec, SLO note, alert rules và alert runbook cho checkpoint 2 | TBD | Alert nên bám triệu chứng/SLO trước, rồi dùng trace và log để điều tra nguyên nhân cụ thể |
+| Nguyễn Tuấn Anh - 2A202601775 | Dashboard, SLO & Alert: dựng dashboard, cấu hình SLO và alert rule | `f1a02e5` | Biết cách chọn chỉ số quan trọng và biến chúng thành dashboard/alert hữu ích |
+| Lê Mạnh Cương - 2A202601137 | Tracing & Prompt Version: cấu hình trace, theo dõi prompt version và evidence trên Langfuse | `f1a02e5` | Hiểu cách trace giúp khoanh vùng bottleneck và liên kết prompt version với request |
+| Lê Ngọc Khánh - 2A202601487 | Incident, Report & Demo: chạy challenge, nối metrics → traces → logs, xác định root cause `rag_slow`, hoàn thiện báo cáo và demo | `8352785b8ce37386264bcd81a9555d403ac3b8a0` | Biết cách điều tra incident theo flow metrics → traces → logs và dùng correlation ID để chứng minh root cause |
+| Vũ Ngọc Thiện - 2A202601793 | Logging & PII: chuẩn hóa JSON log, correlation ID, enrichment và PII redaction | `7a57bfb` | Hiểu vai trò của structured logging và cách giảm rủi ro lộ dữ liệu nhạy cảm |
 
 ## 8. File evidence đã có trong repo
 
